@@ -1,16 +1,8 @@
 import db from "#db/client";
 
-const folderNames = ["Documents", "Pictures", "Music"];
-
-const sampleFiles = [
-  { name: "file1.txt", size: 1000 },
-  { name: "file2.txt", size: 2000 },
-  { name: "file3.txt", size: 3000 },
-  { name: "file4.txt", size: 4000 },
-  { name: "file5.txt", size: 5000 },
-];
-
 export default async function seed() {
+  const folderNames = ["Docs", "Media", "Projects"];
+
   for (const name of folderNames) {
     const {
       rows: [folder],
@@ -18,13 +10,18 @@ export default async function seed() {
       name,
     ]);
 
-    for (let i = 0; i < sampleFiles.length; i++) {
-      const file = sampleFiles[i];
-      const filename = `${name}-${file.name}`;
+    for (let i = 1; i <= 5; i++) {
       await db.query(
         `INSERT INTO files(name, size, folder_id) VALUES ($1, $2, $3)`,
-        [filename, file.size, folder.id]
+        [`${name.toLowerCase()}_file${i}.txt`, 1000 * i, folder.id]
       );
     }
   }
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  await db.connect();
+  await seed();
+  await db.end();
+  console.log("🌱 Database seeded.");
 }

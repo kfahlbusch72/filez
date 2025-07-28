@@ -49,15 +49,20 @@ app.get("/folders/:id", async (req, res, next) => {
 app.post("/folders/:id/files", async (req, res, next) => {
   try {
     const folderId = Number(req.params.id);
-    const { name, size } = req.body;
 
     const {
       rows: [folder],
     } = await db.query(`SELECT * FROM folders WHERE id = $1`, [folderId]);
 
     if (!folder) return res.status(404).send("Folder not found");
+
     if (!req.body) return res.status(400).send("Missing request body");
-    if (!name || !size) return res.status(400).send("Missing required fields");
+
+    const { name, size } = req.body;
+
+    if (!name || !size) {
+      return res.status(400).send("Missing required fields: name and size");
+    }
 
     const {
       rows: [file],
