@@ -23,5 +23,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   await db.connect();
   await seed();
   await db.end();
-  console.log("🌱 Database seeded.");
+  console.log("Database seeded.");
 }
